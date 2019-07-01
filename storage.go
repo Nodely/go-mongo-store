@@ -3,7 +3,6 @@ package storage
 import (
 	"context"
 	"errors"
-	"time"
 
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -56,13 +55,6 @@ func (db *DbStorage) getDb(name string) (*mongo.Client, *mongo.Database) {
 func (db *DbStorage) GetDbCollection(collection string) CRUD {
 	c, d := db.getDb(db.name)
 	return newCRUD(db.ctx, c, d.Collection(collection))
-}
-
-// EnsureIndex func
-func (db *DbStorage) EnsureIndex(c *mongo.Collection, key string) {
-	opts := options.CreateIndexes().SetMaxTime(10 * time.Second)
-	index := yieldIndexModel(key)
-	c.Indexes().CreateOne(context.Background(), index, opts)
 }
 
 func yieldIndexModel(key string) mongo.IndexModel {

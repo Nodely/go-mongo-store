@@ -3,6 +3,7 @@ package storage
 import (
 	"context"
 	"reflect"
+	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -23,6 +24,7 @@ type CRUD interface {
 	DeleteOne(filter interface{}, opts ...*options.DeleteOptions) (*mongo.DeleteResult, error)
 
 	Count(filter interface{}) int64
+	EnsureIndex(key string)
 }
 
 func newCRUD(ctx context.Context, client *mongo.Client, col *mongo.Collection) CRUD {
@@ -87,4 +89,11 @@ func (db *dbc) FindOne(filter interface{}, opts ...*options.FindOneOptions) *mon
 // DeleteOne func
 func (db *dbc) DeleteOne(filter interface{}, opts ...*options.DeleteOptions) (*mongo.DeleteResult, error) {
 	return db.c.DeleteOne(db.ctx, filter, opts...)
+}
+
+// EnsureIndex func
+func (db *dbc) EnsureIndex(key string) {
+	opts := options.CreateIndexes().SetMaxTime(10 * time.Second)
+	index := yieldIndexModel(key)
+	db.c.Indexes().CreateOne(context.Background(), index, opts)
 }
