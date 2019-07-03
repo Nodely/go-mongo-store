@@ -67,7 +67,10 @@ func (db *dbc) SaveItem(id primitive.ObjectID, d interface{}) error {
 // Insert set of interfaces
 func (db *dbc) Insert(d ...interface{}) ([]interface{}, error) {
 	res, err := db.c.InsertMany(db.ctx, d)
-	return res.InsertedIDs, err
+	if err != nil {
+		return nil, err
+	}
+	return res.InsertedIDs, nil
 }
 
 // Count func
