@@ -24,7 +24,9 @@ type CRUD interface {
 	DeleteOne(filter interface{}, opts ...*options.DeleteOptions) (*mongo.DeleteResult, error)
 
 	Count(filter interface{}) int64
+
 	EnsureIndex(key string)
+	EnsureIndexesRaw(idx mongo.IndexModel) error
 }
 
 func newCRUD(ctx context.Context, client *mongo.Client, col *mongo.Collection) CRUD {
@@ -99,4 +101,11 @@ func (db *dbc) EnsureIndex(key string) {
 	opts := options.CreateIndexes().SetMaxTime(10 * time.Second)
 	index := yieldIndexModel(key)
 	db.c.Indexes().CreateOne(context.Background(), index, opts)
+}
+
+// EnsureIndex func
+func (db *dbc) EnsureIndexesRaw(idx mongo.IndexModel) error {
+	opts := options.CreateIndexes().SetMaxTime(10 * time.Second)
+	_, err := db.c.Indexes().CreateOne(context.Background(), idx, opts)
+	return err
 }
