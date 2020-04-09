@@ -15,6 +15,7 @@ import (
 type CRUD interface {
 	GetItem(id primitive.ObjectID, t reflect.Type) (interface{}, error)
 	SaveItem(id primitive.ObjectID, d interface{}) error
+	UpdateOne(filter interface{}, d interface{}) (int64, error)
 
 	Insert(d ...interface{}) ([]interface{}, error)
 
@@ -64,6 +65,11 @@ func (db *dbc) SaveItem(id primitive.ObjectID, d interface{}) error {
 		return res.Err()
 	}
 	return nil
+}
+
+func (db *dbc) UpdateOne(filter interface{}, d interface{}) (int64, error) {
+	res, err := db.c.UpdateOne(db.ctx, filter, d)
+	return res.ModifiedCount, err
 }
 
 // Insert set of interfaces
