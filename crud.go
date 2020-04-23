@@ -69,6 +69,9 @@ func (db *dbc) SaveItem(id primitive.ObjectID, d interface{}) error {
 
 func (db *dbc) UpdateOne(filter interface{}, d interface{}) (int64, error) {
 	res, err := db.c.UpdateOne(db.ctx, filter, d)
+	if err != nil {
+		return 0, err
+	}
 	return res.ModifiedCount, err
 }
 
